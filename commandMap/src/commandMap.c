@@ -1,10 +1,6 @@
 #include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
 #include "command.h"
-#include "commandList.h"
 #include "commandMap.h"
-#include <stdio.h>
 
 uint8_t generateHash(char * key) {
     uint8_t resultBase = 0;
@@ -15,24 +11,38 @@ uint8_t generateHash(char * key) {
     return resultBase % NUMBER_OF_BUCKETS;
 };
 
+uint8_t stringsMatch(char * str1, char * str2, uint8_t maxSize) {
+    for (uint8_t i; i < maxSize && (str1[i] != '\0' || str2[i] != '\0'); i++) {
+        if (str1[i] != str2[i]) {
+            return 0;
+        }
+    }
+    return 1;
+};
+
+void initMap(commandMap_t * map) {
+    for (uint8_t i = 0; i < NUMBER_OF_BUCKETS; i++) {
+        map->buckets[i].currentSize = 0;
+    }
+}
+
 void put(commandMap_t * map, command_t * command) {
     uint8_t hash = generateHash(command->label);
-    if (map->buckets[hash] == NULL) {
-        map->buckets[hash] = createCommandListNode(command);
-    } else {
-        insertCommand(map->buckets[hash], command);
-    }
+    commandMapBucket_t * bucket = &(map->buckets[hash]);
+    uint8_t bucketSize = bucket->currentSize;
+    bucket->commands[bucketSize] = command;
+    bucket->currentSize++;
 };
 
 command_t * get(commandMap_t * map, char * key) {
     uint8_t hash = generateHash(key);
 
-    commandListNode_t * currentNode = map->buckets[hash];
-    while (currentNode != NULL) {
-        if (strcmp(currentNode->command->label, key) == 0) {
-            return currentNode->command;
+    commandMapBucket_t * bucket = &(map->buckets[hash]);
+    
+    for (uint8_t i = 0; i < bucket->currentSize; i++) {
+        if (stringsMatch(bucket->commands[i]->label, key, 30) == 1) {
+            return bucket->commands[i];
         }
-        currentNode = currentNode->next;
     }
-    return NULL;
+    return 0;
 };

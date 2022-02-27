@@ -1,8 +1,6 @@
 #include <stdint.h>
-#include <stdlib.h>
 #include "unity.h"
 #include "command.h"
-#include "commandList.h"
 #include "commandMap.h"
 
 void setUp(void) {
@@ -37,14 +35,15 @@ void shouldPutCommandUnderHashAndRetrieveIt(void) {
 
     test();
 
-    commandMap_t * cmap = malloc(sizeof(commandMap_t));
+    commandMap_t cmap;// = malloc(sizeof(commandMap_t));
+    initMap(&cmap);
     test();
-    put(cmap, &command1);
+    put(&cmap, &command1);
     test();
-    put(cmap, &command2);
+    put(&cmap, &command2);
     test();
 
-    command_t * testedCommand = get(cmap, commandName2);
+    command_t * testedCommand = get(&cmap, commandName2);
     test();
 
     TEST_ASSERT_EQUAL_UINT64((uint64_t)&command2, (uint64_t)testedCommand);
