@@ -1,5 +1,3 @@
-#include <stdint.h>
-#include "command.h"
 #include "commandMap.h"
 
 uint8_t generateHash(char * key) {
@@ -9,15 +7,6 @@ uint8_t generateHash(char * key) {
     }
 
     return resultBase % NUMBER_OF_BUCKETS;
-};
-
-uint8_t stringsMatch(char * str1, char * str2, uint8_t maxSize) {
-    for (uint8_t i; i < maxSize && (str1[i] != '\0' || str2[i] != '\0'); i++) {
-        if (str1[i] != str2[i]) {
-            return 0;
-        }
-    }
-    return 1;
 };
 
 void initMap(commandMap_t * map) {
@@ -38,7 +27,7 @@ command_t * get(commandMap_t * map, char * key) {
     uint8_t hash = generateHash(key);
 
     commandMapBucket_t * bucket = &(map->buckets[hash]);
-    
+
     for (uint8_t i = 0; i < bucket->currentSize; i++) {
         if (stringsMatch(bucket->commands[i]->label, key, 30) == 1) {
             return bucket->commands[i];

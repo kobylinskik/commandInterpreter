@@ -1,15 +1,23 @@
-#include <stdint.h>
-#include <stdlib.h>
-#include "unity.h"
 #include "inputHandler.h"
+#include "unity.h"
+#include <stdlib.h>
 
-void setUp(void) {
+#define INVALID_NUMBER_OF_ARGUMENTS "Invalid number of arguments. Expected 4 arguments, received %s arguments"
 
-}
+void setUp(void) {}
 
-void tearDown(void) {
+void tearDown(void) {}
 
-}
+uint8_t validateArgcEqualsFour(uint8_t argc, char ** argv, char * responseBuffer, uint8_t responseBufferSize){
+  if (argc != 4) {
+    char writeMessageArg[2];
+    *writeMessageArg = argc + '0';
+    *(writeMessageArg + 1) = 0;
+    writeMessageToBuffer(responseBuffer, &writeMessageArg, responseBuffer, responseBufferSize);
+    return 1;
+  }
+  return 0;
+};
 
 void shouldSplitInputIntoCommandLabelAndTwoParams(void) {
     char * input = "setPin(A,5)";
@@ -28,8 +36,52 @@ void shouldSplitInputIntoCommandLabelAndTwoParams(void) {
     TEST_ASSERT_EQUAL_STRING("5", argv[1]);
 }
 
+void shouldWriteNoCommandFoundToResponseBuffer_whenNoCommandIsFound(void) {
+    char * commandName = "invalidCommand";
+    uint8_t argc = 1;
+    char * argv[1];
+    argv[0] = "testParam";
+
+    commandMap_t cmap;
+    initMap(&cmap);
+
+    char responseBuffer[37];
+    uint8_t responseBufferSize = 37u;
+
+    executeInput(&cmap, commandName, argc, argv, responseBuffer, responseBufferSize);
+
+    TEST_ASSERT_EQUAL_STRING("Command 'invalidCommand' not found\n", responseBuffer);
+}
+
+void shouldWriteValidationErrorMessageToBuffer_onExecuteWithInvalidNumberOfArguments(void) {
+    char * commandName = "testCommand";
+    
+    command_t command;
+    command.label = commandName;
+    command.validation = *validateArgcEqualsFour;
+
+    uint8_t argc = 2;
+    char * argv[2];
+    argv[0] = "testParam";
+    argv[1] = "test2";
+
+    commandMap_t cmap;
+    initMap(&cmap);
+
+    put(&cmap, &command);
+
+    char responseBuffer[60];
+    uint8_t responseBufferSize = 60u;
+
+    executeInput(&cmap, commandName, argc, argv, responseBuffer, responseBufferSize);
+
+    TEST_ASSERT_EQUAL_STRING("Invalid number of arguments. Expected 4 arguments, received 2 arguments", responseBuffer);
+}
+
 int main(void) {
-  UNITY_BEGIN();  
-  RUN_TEST(shouldSplitInputIntoCommandLabelAndTwoParams);
-  return UNITY_END();
+    UNITY_BEGIN();
+    RUN_TEST(shouldSplitInputIntoCommandLabelAndTwoParams);
+    RUN_TEST(shouldWriteNoCommandFoundToResponseBuffer_whenNoCommandIsFound);
+    RUN_TEST(shouldWriteValidationErrorMessageToBuffer_onExecuteWithInvalidNumberOfArguments);
+    return UNITY_END();
 }

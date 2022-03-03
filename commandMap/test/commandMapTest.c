@@ -20,10 +20,6 @@ void shouldGenerateHashForString(void) {
     TEST_ASSERT_EQUAL_UINT8(expectedResult, hash);
 }
 
-void test() {
-
-};
-
 void shouldPutCommandUnderHashAndRetrieveIt(void) {
     char * commandName1 = "testCommand1";
     command_t command1;
@@ -33,25 +29,63 @@ void shouldPutCommandUnderHashAndRetrieveIt(void) {
     command_t command2;
     command2.label = commandName2;
 
-    test();
-
-    commandMap_t cmap;// = malloc(sizeof(commandMap_t));
+    commandMap_t cmap;
     initMap(&cmap);
-    test();
     put(&cmap, &command1);
-    test();
     put(&cmap, &command2);
-    test();
 
     command_t * testedCommand = get(&cmap, commandName2);
-    test();
 
     TEST_ASSERT_EQUAL_UINT64((uint64_t)&command2, (uint64_t)testedCommand);
+}
+
+void shouldReturnZeroIfKLeyDoesntExist(void) {
+    char * commandName1 = "testCommand1";
+    command_t command1;
+    command1.label = commandName1;
+
+    char * commandName2 = "testCommand2";
+    command_t command2;
+    command2.label = commandName2;
+
+    char * commandName3 = "testCommand3";
+
+    commandMap_t cmap;
+    initMap(&cmap);
+    put(&cmap, &command1);
+    put(&cmap, &command2);
+
+    command_t * testedCommand = get(&cmap, commandName3);
+
+    TEST_ASSERT_EQUAL_UINT64(0u, (uint64_t)testedCommand);
+}
+
+void shouldReturnZeroIfKBucketIsEmpty(void) {
+    char * commandName1 = "testCommand1";
+    command_t command1;
+    command1.label = commandName1;
+
+    char * commandName2 = "testCommand2";
+    command_t command2;
+    command2.label = commandName2;
+
+    char * commandName3 = "fafafafa";
+
+    commandMap_t cmap;
+    initMap(&cmap);
+    put(&cmap, &command1);
+    put(&cmap, &command2);
+
+    command_t * testedCommand = get(&cmap, commandName3);
+
+    TEST_ASSERT_EQUAL_UINT64(0u, (uint64_t)testedCommand);
 }
 
 int main(void) {
   UNITY_BEGIN();  
   RUN_TEST(shouldGenerateHashForString);
   RUN_TEST(shouldPutCommandUnderHashAndRetrieveIt);
+  RUN_TEST(shouldReturnZeroIfKLeyDoesntExist);
+  RUN_TEST(shouldReturnZeroIfKBucketIsEmpty);
   return UNITY_END();
 }
