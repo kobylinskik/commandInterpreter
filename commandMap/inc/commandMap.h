@@ -3,11 +3,9 @@
 #define __COMMAND_MAP__
 
 #include "command.h"
+#include "projectConstants.h"
 #include "stringUtils.h"
 #include <stdint.h>
-
-#define NUMBER_OF_BUCKETS 23
-#define MAX_BUCKET_SIZE 10
 
 typedef struct {
     uint8_t currentSize;

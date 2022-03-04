@@ -1,0 +1,12 @@
+#ifndef __PROJECT_CONSTANTS__
+#define __PROJECT_CONSTANTS__
+
+#define NUMBER_OF_BUCKETS 23
+#define MAX_BUCKET_SIZE 10
+
+#define MAX_ARGS 4
+#define MAX_ARG_LENGTH 20
+
+#define RESPONSE_BUFFER_SIZE 40
+
+#endif

@@ -1,8 +1,8 @@
 #include "command.h"
 #include "unity.h"
 #include <stdint.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define INVALID_NUMBER_OF_ARGUMENTS "Invalid number of arguments. Expected 4 arguments, received %s arguments"
 
@@ -69,7 +69,7 @@ void shouldExecuteCommandWithParams(void) {
 
 void shouldValidateCommandParams(void) {
     char * commandName = "testCommand";
-    
+
     command_t command;
     command.label = commandName;
     command.validation = *validateArgcEqualsFour;
