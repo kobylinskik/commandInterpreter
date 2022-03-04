@@ -10,10 +10,11 @@ void tearDown(void) {}
 
 uint8_t validateArgcEqualsFour(uint8_t argc, char ** argv, char * responseBuffer, uint8_t responseBufferSize) {
     if (argc != 4) {
-        char writeMessageArg[2] = {'0', '\0'};
-        writeMessageArg[0] += argc;
-        char * writeMessageArgs = (char *)writeMessageArg;
-        writeMessageToBuffer(INVALID_NUMBER_OF_ARGUMENTS, &writeMessageArgs, responseBuffer, responseBufferSize);
+        char writeMessageArgs[MAX_ARGS][MAX_ARG_LENGTH];
+        writeMessageArgs[0][0] = '0' + argc;
+        writeMessageArgs[0][1] = 0;
+
+        writeMessageToBuffer(INVALID_NUMBER_OF_ARGUMENTS, writeMessageArgs, responseBuffer, responseBufferSize);
         return 1;
     }
     return 0;
@@ -30,10 +31,6 @@ void shouldSplitInputIntoCommandLabelAndTwoParams(void) {
     uint8_t inputLength = 11;
     char commandLabel[7];
     uint8_t argc = 0;
-
-    /*char * argv[2];
-    argv[0] = malloc(2 * sizeof(char));
-    argv[1] = malloc(2 * sizeof(char));*/
 
     char argv[MAX_ARGS][MAX_ARG_LENGTH];
 
@@ -59,7 +56,7 @@ void shouldWriteNoCommandFoundToResponseBuffer_whenNoCommandIsFound(void) {
 
     executeInput(&cmap, commandName, argc, argv, responseBuffer, responseBufferSize);
 
-    TEST_ASSERT_EQUAL_STRING("Command 'invalidCommand' not found\n", responseBuffer);
+    TEST_ASSERT_EQUAL_STRING("Command 'invalidCommand' not found\n\r", responseBuffer);
 }
 
 void shouldWriteValidationErrorMessageToBuffer_onExecuteWithInvalidNumberOfArguments(void) {

@@ -1,4 +1,5 @@
 #include "command.h"
+#include "projectConstants.h"
 #include "unity.h"
 #include <stdint.h>
 #include <stdio.h>
@@ -12,10 +13,10 @@ void tearDown(void) {}
 
 uint8_t validateArgcEqualsFour(uint8_t argc, char ** argv, char * responseBuffer, uint8_t responseBufferSize) {
     if (argc != 4) {
-        char writeMessageArg[2] = {'0', '\0'};
-        writeMessageArg[0] += argc;
-        char * writeMessageArgs = (char *)writeMessageArg;
-        writeMessageToBuffer(INVALID_NUMBER_OF_ARGUMENTS, &writeMessageArgs, responseBuffer, responseBufferSize);
+        char writeMessageArgs[MAX_ARGS][MAX_ARG_LENGTH];
+        writeMessageArgs[0][0] = '0' + argc;
+        writeMessageArgs[0][1] = 0;
+        writeMessageToBuffer(INVALID_NUMBER_OF_ARGUMENTS, writeMessageArgs, responseBuffer, responseBufferSize);
         return 1;
     }
     return 0;
@@ -79,8 +80,8 @@ void shouldValidateCommandParams(void) {
     argv[0] = "testParam";
     argv[1] = "test2";
 
-    char responseBuffer[72];
-    uint8_t responseBufferSize = 72u;
+    char responseBuffer[100];
+    uint8_t responseBufferSize = 100;
 
     uint8_t result = validateParams(&command, argc, argv, responseBuffer, responseBufferSize);
     TEST_ASSERT_EQUAL_UINT8(1, result);

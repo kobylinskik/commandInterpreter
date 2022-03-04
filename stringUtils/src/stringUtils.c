@@ -9,7 +9,13 @@ uint8_t stringsMatch(char * str1, char * str2, uint8_t maxSize) {
     return 1;
 };
 
-void writeMessageToBuffer(char * message, char ** argv, char * buffer, uint8_t bufferSize) {
+void strCopy(char originString[20], char targetString[20], uint8_t maxSize) {
+    while (originString && maxSize--) {
+        *(targetString++) = *originString++;
+    }
+}
+
+void writeMessageToBuffer(char * message, char argv[MAX_ARGS][MAX_ARG_LENGTH], char * buffer, uint8_t bufferSize) {
     uint8_t argNumber = 0;
     while (*message && bufferSize) {
         if (*message == '%' && *(message + 1) == 's') {

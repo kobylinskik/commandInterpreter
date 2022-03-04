@@ -22,7 +22,13 @@ void splitInputIntoCommandAndArgs(char * input, uint8_t inputLength, char * comm
 void executeInput(commandMap_t * commandMap, char * commandLabel, uint8_t argc, char argv[MAX_ARGS][MAX_ARG_LENGTH], char * responseBuffer, uint8_t responseBufferSize) {
     command_t * command = get(commandMap, commandLabel);
     if (!command) {
-        writeMessageToBuffer(INVALID_COMMAND_MESSAGE, &commandLabel, responseBuffer, responseBufferSize);
+        char messageArgv[MAX_ARGS][MAX_ARG_LENGTH];
+        uint8_t i;
+        for (i = 0; commandLabel[i]; i++) {
+            messageArgv[0][i] = commandLabel[i];
+        }
+        messageArgv[0][i] = 0;
+        writeMessageToBuffer(INVALID_COMMAND_MESSAGE, messageArgv, responseBuffer, responseBufferSize);
         return;
     }
     if (validateParams(command, argc, argv, responseBuffer, responseBufferSize)) {
